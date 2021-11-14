@@ -1,4 +1,5 @@
 import math
+import sys
 from tkinter import Canvas
 from PIL import Image, ImageTk, ImageOps
 
@@ -11,7 +12,8 @@ from src.Point import Point
 TICK_DURATION = math.floor(1000 / 60)
 
 # 1 second
-NEW_PIPE = 2500
+NEW_PIPE = 2000
+
 
 class GameWindow(Canvas):
 
@@ -23,28 +25,26 @@ class GameWindow(Canvas):
 
     def update_player_pos(self):
         self.delete(self.crappy)
-        self.crappy = self.create_image(self.player.pos.x, self.player.pos.y, image=self.crappy_img)
-
+        self.crappy = self.player.draw(self)
 
     def update_pipes_pos(self):
         for pipe in self.pipes:
             pipe.tick()
-            if pipe.tag is not None:
-                self.delete(pipe.tag)
-            if pipe.pos.x <= -pipe.size.x:
+            if pipe.is_out_of_bounds():
                 self.pipes.remove(pipe)
             else:
-                pipe.tag = self.create_image(pipe.pos.x, pipe.pos.y, image=
-                self.flipped_pipe_img if pipe.flipped is True else self.pipe_img, tag='pipe')
+                pipe.draw(self)
+
+
 
     def check_lose(self):
-        results = self.find_overlapping(self.player.pos.x, self.player.pos.y, self.player.pos.x + self.player.size.x, self.player.pos.y + self.player.size.y)
+        results = self.find_overlapping(*self.player.get_hitbox())
+        self.delete(self.hitbox_check)
+        #self.hitbox_check = self.create_rectangle(*self.player.get_hitbox(), fill="red", tag="hitbox")
 
         for result in results:
             if "pipe" in self.gettags(result):
-                print('lose')
-
-
+                self.stop = True
 
     def update_pos(self):
         self.update_player_pos()
@@ -54,34 +54,28 @@ class GameWindow(Canvas):
         self.update_pos()
         self.player.tick()
         self.check_lose()
-        self.after(TICK_DURATION, self.tick)
-
+        if self.stop == False:
+            self.after(TICK_DURATION, self.tick)
 
     def add_new_pipe(self):
-        self.pipes.append(Pipe(Point(self.root.winfo_screenwidth(), self.root.winfo_screenheight())))
+        if self.player.started == False:
+            return
+        self.pipes.append(Pipe())
         self.after(NEW_PIPE, self.add_new_pipe)
-
-    def init_image(self):
-        tmp_pipe_img = Image.open("./resources/pipe2.png").convert("RGBA")
-        im_flip = ImageOps.flip(tmp_pipe_img)
-
-        self.pipe_img = ImageTk.PhotoImage(tmp_pipe_img)
-        self.flipped_pipe_img = ImageTk.PhotoImage(im_flip)
 
     def __init__(self, root):
         width, height = root.winfo_screenwidth(), root.winfo_screenheight()
 
-        super().__init__(width=500, height=500,
+        super().__init__(width=480, height=640,
                          background="black", highlightthickness=0)
         self.root = root
         self.player = Player()
         self.pack()
-        self.init_callbacks()
-        self.crappy_img = ImageTk.PhotoImage(Image.open("./resources/crappy_bird.png").convert("RGBA"))
-        self.crappy = self.create_image(self.player.pos.x, self.player.pos.y, image=self.crappy_img)
         self.pipes = []
         self.pipe_img = None
         self.flipped_pipe_img = None
-        self.init_image()
+        self.crappy = -1
         self.after(NEW_PIPE, self.add_new_pipe)
+        self.stop = False
+        self.hitbox_check = None
         self.tick()
