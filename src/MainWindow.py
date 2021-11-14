@@ -17,9 +17,6 @@ NEW_PIPE = 2000
 
 class GameWindow(Canvas):
 
-    def mdr(self):
-        print('lol')
-
     def init_callbacks(self):
         self.player.jump()
 

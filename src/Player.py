@@ -52,7 +52,6 @@ class Player:
 
     def jump(self):
         if self.pos.y + self.size.y - 20 > 0:
-            print('jump')
             self.is_flying = True
             self.started = True
 
