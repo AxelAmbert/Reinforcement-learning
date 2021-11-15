@@ -31,7 +31,7 @@ class Player:
             rotated = self.player_img.rotate(self.tick_count * 6, expand=True)
         else:
             rotated = self.player_img.rotate(self.clamp(self.fall_count, 0, 10) * -4.5, expand=True)
-        rotated = self.player_img
+        #rotated = self.player_img
         self.show_img = ImageTk.PhotoImage(rotated)
 
     def draw(self, canvas):
@@ -48,7 +48,8 @@ class Player:
             self.fall_count += 1
             self.tick_count = 0
             self.is_flying = False
-            self.pos.y += 6
+            if self.fall_count >= 5:
+                self.pos.y += 6
 
     def jump(self):
         if self.pos.y + self.size.y - 20 > 0:

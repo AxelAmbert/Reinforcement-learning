@@ -14,7 +14,6 @@ TICK_DURATION = math.floor(1000 / 60)
 # 1 second
 NEW_PIPE = 2000
 
-
 class GameWindow(Canvas):
 
     def init_callbacks(self):
@@ -32,8 +31,6 @@ class GameWindow(Canvas):
             else:
                 pipe.draw(self)
 
-
-
     def check_lose(self):
         results = self.find_overlapping(*self.player.get_hitbox())
         self.delete(self.hitbox_check)
@@ -41,7 +38,8 @@ class GameWindow(Canvas):
 
         for result in results:
             if "pipe" in self.gettags(result):
-                self.stop = True
+                self.reset()
+                #self.stop = True
 
     def update_pos(self):
         self.update_player_pos()
@@ -59,6 +57,13 @@ class GameWindow(Canvas):
             return
         self.pipes.append(Pipe())
         self.after(NEW_PIPE, self.add_new_pipe)
+
+    def reset(self):
+
+        for pipe in self.pipes:
+            for tag in pipe.tags:
+                self.delete(tag)
+        self.pipes = []
 
     def __init__(self, root):
         width, height = root.winfo_screenwidth(), root.winfo_screenheight()
