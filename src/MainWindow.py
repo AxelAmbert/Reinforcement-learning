@@ -8,10 +8,11 @@ from src.Player import Player
 
 # 60 FPS
 from src.Point import Point
+from src.Score import Score
 
 TICK_DURATION = math.floor(1000 / 60)
 
-# 1 second
+# 1,5 second
 NEW_PIPE = 2000
 
 class GameWindow(Canvas):
@@ -44,25 +45,39 @@ class GameWindow(Canvas):
     def update_pos(self):
         self.update_player_pos()
         self.update_pipes_pos()
+        self.score.draw(self)
+
+    def validate_pipe(self, pipe):
+        if self.player.pos.x > pipe.positions[0].x:
+            pipe.score_validated = True
+            self.score.score += 1
+
+    def check_score(self):
+        for pipe in self.pipes:
+            if pipe.score_validated:
+                continue
+            self.validate_pipe(pipe)
 
     def tick(self):
         self.update_pos()
         self.player.tick()
         self.check_lose()
+        self.check_score()
         if self.stop == False:
             self.after(TICK_DURATION, self.tick)
 
     def add_new_pipe(self):
+        self.after(NEW_PIPE, self.add_new_pipe)
         if self.player.started == False:
             return
         self.pipes.append(Pipe())
-        self.after(NEW_PIPE, self.add_new_pipe)
 
     def reset(self):
 
         for pipe in self.pipes:
             for tag in pipe.tags:
                 self.delete(tag)
+        self.score.score = 0
         self.pipes = []
 
     def __init__(self, root):
@@ -80,4 +95,5 @@ class GameWindow(Canvas):
         self.after(NEW_PIPE, self.add_new_pipe)
         self.stop = False
         self.hitbox_check = None
+        self.score = Score()
         self.tick()

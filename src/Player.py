@@ -49,7 +49,7 @@ class Player:
             self.tick_count = 0
             self.is_flying = False
             if self.fall_count >= 5:
-                self.pos.y += 6
+                self.pos.y += 8
 
     def jump(self):
         if self.pos.y + self.size.y - 20 > 0:

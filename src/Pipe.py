@@ -51,8 +51,7 @@ class Pipe:
         self.tags = [None, None]
         self.flipped = True if r == 0 else False
         self.pipe_img, self.flipped_pipe_img = self.init_images
-
-
+        self.score_validated = False
 
     def tick(self):
         for pos in self.positions:

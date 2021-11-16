@@ -2,6 +2,10 @@ from tkinter import *
 
 from src.GameInfo import GameInfo
 from src.MainWindow import GameWindow
+#import tensorflow as tf
+
+
+
 
 root = Tk()
 
