@@ -3,6 +3,7 @@ import sys
 from tkinter import Canvas
 from PIL import Image, ImageTk, ImageOps
 
+from src.GameInfo import GameInfo
 from src.Pipe import Pipe
 from src.Player import Player
 
@@ -37,10 +38,12 @@ class GameWindow(Canvas):
         self.delete(self.hitbox_check)
         #self.hitbox_check = self.create_rectangle(*self.player.get_hitbox(), fill="red", tag="hitbox")
 
+        if self.player.is_out_of_bounds():
+            self.stop = True
+
         for result in results:
             if "pipe" in self.gettags(result):
-                self.reset()
-                #self.stop = True
+                self.stop = True
 
     def update_pos(self):
         self.update_player_pos()
@@ -58,16 +61,41 @@ class GameWindow(Canvas):
                 continue
             self.validate_pipe(pipe)
 
-    def tick(self):
+    def check_new_pipe(self):
+        last_pipe = self.pipes[-1]
+
+        if last_pipe.positions[0].x <= GameInfo.scree_size.x / 2:
+            self.add_new_pipe()
+
+    def get_pipe_hole_position(self):
+        print('pos {} - size {}'.format(self.pipes[-1].positions[0].y, self.pipes[-1].size.y))
+        return int(self.pipes[-1].positions[0].y - self.pipes[-1].size.y / 2)
+
+    def get_distance_from_pipe(self):
+        last_pipe = self.pipes[-1]
+        pos = last_pipe.positions[0].x - self.player.pos.x
+
+        return pos if pos >= 0 else 0
+
+    def get_state(self):
+        return [self.player.get_clamped_pos(),
+                self.get_distance_from_pipe(),
+                self.get_pipe_hole_position()]
+
+    def tick(self, action):
+        #if self.stop == False:
+        #    self.after(TICK_DURATION, self.tick)
+
         self.update_pos()
-        self.player.tick()
+        self.player.tick(action)
         self.check_lose()
         self.check_score()
-        if self.stop == False:
-            self.after(TICK_DURATION, self.tick)
+        self.check_new_pipe()
+        return self.get_state()
+        #print('Y pos {} - Distance X {} - Y hole {}'.format(self.player.pos.y, self.get_distance_from_pipe(), self.get_pipe_hole_position()))
 
     def add_new_pipe(self):
-        self.after(NEW_PIPE, self.add_new_pipe)
+        #self.after(NEW_PIPE, self.add_new_pipe)
         if self.player.started == False:
             return
         self.pipes.append(Pipe())
@@ -78,7 +106,10 @@ class GameWindow(Canvas):
             for tag in pipe.tags:
                 self.delete(tag)
         self.score.score = 0
-        self.pipes = []
+        self.pipes = [Pipe()]
+        self.stop = False
+        self.player = Player()
+
 
     def __init__(self, root):
         width, height = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -88,12 +119,13 @@ class GameWindow(Canvas):
         self.root = root
         self.player = Player()
         self.pack()
-        self.pipes = []
+        self.pipes = [Pipe()]
         self.pipe_img = None
         self.flipped_pipe_img = None
         self.crappy = -1
-        self.after(NEW_PIPE, self.add_new_pipe)
+        # Faire spawn les pipes sans time
+        #self.after(NEW_PIPE, self.add_new_pipe)
         self.stop = False
         self.hitbox_check = None
         self.score = Score()
-        self.tick()
+        self.i = 0

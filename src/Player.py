@@ -5,6 +5,8 @@ from Point import Point
 from src.GameInfo import GameInfo
 
 
+JUMP = 1
+
 class Player:
 
     def clamp(self, value, min, max):
@@ -17,7 +19,7 @@ class Player:
         self.size = Point(54 * (GameInfo.window_size.x / 480), 40 * (GameInfo.window_size.y / 640))
         self.pos = Point(250, 250)
 
-        self.started = False
+        self.started = GameInfo.is_AI
         self.is_flying = False
         self.tick_count = 0
         self.fall_count = 0
@@ -38,8 +40,9 @@ class Player:
         self.update_player_img()
         return canvas.create_image(self.pos.x, self.pos.y, image=self.show_img, tag="player")
 
-
-    def tick(self):
+    def tick(self, action):
+        if action == JUMP:
+            self.jump()
         if self.is_flying and self.tick_count < 5:
             self.tick_count += 1
             self.pos.y -= 15
@@ -52,15 +55,22 @@ class Player:
                 self.pos.y += 8
 
     def jump(self):
-        if self.pos.y + self.size.y - 20 > 0:
-            self.is_flying = True
-            self.started = True
+        self.is_flying = True
+        self.started = True
+
+    def is_out_of_bounds(self):
+        return self.pos.y - self.size.y / 2 <= 0 and self.pos.y + self.size.y / 2 >= GameInfo.scree_size.y
 
     def adjust_hitbox(self):
         if self.is_flying:
             return (self.size.x / 50) * self.tick_count * 2
 
         return self.clamp(self.fall_count, 0, 10) * self.size.x / 50
+
+    def get_clamped_pos(self):
+        pos = int(self.pos.y - self.size.y / 2)
+
+        return self.clamp(pos, 0, 640)
 
     def get_hitbox(self):
         start_x = self.pos.x - self.size.x / 2 #+ self.adjust_hitbox()
