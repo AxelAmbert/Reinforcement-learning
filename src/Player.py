@@ -27,14 +27,15 @@ class Player:
         self.show_img = None
         self.init_player_img()
         self.velocity = 1
-        self.min_velocity = 8
+        self.min_velocity = 10
 
     def update_player_img(self):
 
-        if self.is_flying:
+        rotated = self.player_img.rotate(0 - (self.velocity * 3))
+        '''if self.is_flying:
             rotated = self.player_img.rotate(self.tick_count * 6, expand=True)
         else:
-            rotated = self.player_img.rotate(self.clamp(self.fall_count, 0, 10) * -4.5, expand=True)
+            rotated = self.player_img.rotate(self.clamp(self.fall_count, 0, 10) * -4.5, expand=True)'''
         #rotated = self.player_img
         self.show_img = ImageTk.PhotoImage(rotated)
 
