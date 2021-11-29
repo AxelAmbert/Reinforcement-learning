@@ -2,7 +2,7 @@ from src.Point import Point
 
 
 class GameInfo:
-    scree_size = Point(0, 0)
+    screen_size = Point(0, 0)
     window_size = Point(0, 0)
     is_AI = False
 
