@@ -72,6 +72,9 @@ class Player:
 
         return self.clamp(pos, 0, 640)
 
+    def get_player_pos(self):
+        return int(self.pos.y - self.size.y / 2)
+
     def get_hitbox(self):
         start_x = self.pos.x - self.size.x / 2 #+ self.adjust_hitbox()
         start_y = self.pos.y - self.size.y / 2
