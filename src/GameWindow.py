@@ -78,7 +78,7 @@ class GameWindow(Canvas):
 
     def get_distance_from_pipe(self):
         last_pipe = self.pipes[-1]
-        pos = last_pipe.positions[0].x - self.player.pos.x
+        pos = last_pipe.positions[0].x + last_pipe.size.x / 2 - self.player.pos.x
 
         return pos if pos >= 0 else 0
 
