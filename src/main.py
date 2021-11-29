@@ -5,7 +5,7 @@ from tkinter import *
 import gym
 import os
 
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 
@@ -16,13 +16,14 @@ from src.GameWindow import GameWindow
 AI_ON = True
 AI_FALSE = False
 globals()['jump'] = False
-
 GAME_MODE = False
+chosen_algorithm = PPO
+
 
 def update(root, window):
-    # print(window.tick(globals()['jump']))
+    window.tick(globals()['jump'])
     globals()['jump'] = False
-    root.after(int(1 / 60), lambda: update(root, window))
+    root.after(int(1000 / 60), lambda: update(root, window))
 
 def enable_jump():
     globals()['jump'] = True
@@ -33,7 +34,7 @@ def load_custom_model(root, game_window):
     log_path = os.path.join('Training', 'Logs')
 
     # env = DummyVecEnv([lambda: env])
-    model = PPO('MlpPolicy', env, verbose=1, tensorboard_log=log_path)
+    model = chosen_algorithm('MlpPolicy', env, verbose=1, tensorboard_log=log_path)
 
     return model, env
 
@@ -77,7 +78,7 @@ def game():
     root, game_window = init()
     root.bind('<Key>', lambda e: enable_jump())
 
-    root.after(int(1 / 60), lambda: update(root, game_window))
+    update(root, game_window)
     while True:
         root.update_idletasks()
         root.update()
@@ -92,7 +93,7 @@ def learn():
 
     PPO_Path = os.path.join('Training', 'Saved Models', 'PPO_flappy')
     model.save(PPO_Path)
-    # model = PPO.load(PPO_Path, env=env)
+    #model = chosen_algorithm.load(PPO_Path, env=env)
 
     render_test(model, env)
     # root.mainloop()
