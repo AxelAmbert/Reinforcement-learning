@@ -37,10 +37,12 @@ class GameWindow(Canvas):
                 pipe.draw(self)
 
     def check_lose(self):
-        return
         results = self.find_overlapping(*self.player.get_hitbox())
+        # self.find_overlapping(*self.pipes[-1].get_hitbox(1))
         self.delete(self.hitbox_check)
+        # self.delete(self.hitbox_pipes)
         # self.hitbox_check = self.create_rectangle(*self.player.get_hitbox(), fill="red", tag="hitbox")
+        # self.hitbox_pipes = self.create_rectangle(*self.pipes[-1].get_hitbox(1), fill="blue", tag="hitboxpipe")
 
         if self.player.is_out_of_bounds():
             self.stop = True
@@ -79,7 +81,7 @@ class GameWindow(Canvas):
 
     def get_distance_from_pipe(self):
         last_pipe = self.pipes[-1]
-        pos = last_pipe.positions[0].x + last_pipe.size.x / 2 - self.player.pos.x
+        pos = (last_pipe.positions[0].x + (last_pipe.size.x / 2)) - self.player.pos.x
 
         return pos if pos >= 0 else 0
 
@@ -87,7 +89,7 @@ class GameWindow(Canvas):
         h_dist = self.get_distance_from_pipe()
         next_pipe_pos = self.pipes[-1].positions[1].y + self.pipes[-1].size.y / 2
         player_pos = self.player.get_player_pos()
-        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 8) - self.player.size.y / 2
+        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 6)
         v_dist = int(wanted_pos - player_pos)
 
         # print(h_dist, v_dist)
@@ -98,12 +100,12 @@ class GameWindow(Canvas):
         state = self.get_state()
         next_pipe_pos = self.pipes[-1].positions[1].y + self.pipes[-1].size.y / 2
         player_pos = self.player.get_player_pos()
-        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 8) - self.player.size.y / 2
+        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 4) - self.player.size.y / 2
 
         for draw_data in self.visualizer:
             self.delete(draw_data)
         self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + state[0], self.player.pos.y, fill="blue"))
-        self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.pipes[-1].positions[0].x, self.player.pos.y + state[1  ], fill="red"))
+        self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.pipes[-1].positions[0].x, self.player.pos.y + state[1], fill="red"))
 
 
     def tick(self, action):
@@ -115,7 +117,7 @@ class GameWindow(Canvas):
         self.check_lose()
         self.check_score()
         self.check_new_pipe()
-        self.draw_visualizer()
+        # self.draw_visualizer()
         return self.get_state()
         # print('Y pos {} - Distance X {} - Y hole {}'.format(self.player.pos.y, self.get_distance_from_pipe(), self.get_pipe_hole_position()))
 
@@ -152,6 +154,7 @@ class GameWindow(Canvas):
         # self.after(NEW_PIPE, self.add_new_pipe)
         self.stop = False
         self.hitbox_check = None
+        self.hitbox_pipes = None
         self.score = Score()
         self.visualizer = []
         self.i = 0

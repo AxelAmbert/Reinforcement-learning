@@ -56,3 +56,11 @@ class Pipe:
     def tick(self):
         for pos in self.positions:
             pos.x -= 5
+
+    def get_hitbox(self, index):
+        start_x = self.positions[index].x - self.size.x / 2  # + self.adjust_hitbox()
+        start_y = self.positions[index].y - self.size.y / 2
+        end_x = self.positions[index].x + self.size.x - self.size.x / 2  # + self.adjust_hitbox()
+        end_y = self.positions[index].y + self.size.y - self.size.y / 2  # - self.adjust_hitbox()
+
+        return [start_x, start_y, end_x, end_y]
