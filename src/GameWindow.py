@@ -67,8 +67,10 @@ class GameWindow(Canvas):
     def check_new_pipe(self):
         last_pipe = self.pipes[-1]
 
-        if last_pipe.positions[0].x <= GameInfo.scree_size.x / 2:
+        if self.get_distance_from_pipe() <= 0:
             self.add_new_pipe()
+        #if last_pipe.positions[0].x <= GameInfo.scree_size.x / 2:
+        #   self.add_new_pipe()
 
     def get_distance_from_hole_pos(self):
         # print('pos {} - size {}'.format(self.pipes[-1].positions[0].y, self.pipes[-1].size.y))
