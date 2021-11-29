@@ -86,7 +86,8 @@ class GameWindow(Canvas):
         h_dist = self.get_distance_from_pipe()
         next_pipe_pos = self.pipes[-1].positions[1].y + self.pipes[-1].size.y / 2
         player_pos = self.player.get_player_pos()
-        v_dist = next_pipe_pos + (GameInfo.window_size.y / 8) - self.player.size.y / 2
+        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 8) - self.player.size.y / 2
+        v_dist = int(wanted_pos - player_pos)
 
         # print(h_dist, v_dist)
 
@@ -94,11 +95,14 @@ class GameWindow(Canvas):
 
     def draw_visualizer(self):
         state = self.get_state()
+        next_pipe_pos = self.pipes[-1].positions[1].y + self.pipes[-1].size.y / 2
+        player_pos = self.player.get_player_pos()
+        wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 8) - self.player.size.y / 2
 
         for draw_data in self.visualizer:
             self.delete(draw_data)
         self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + state[0], self.player.pos.y, fill="blue"))
-        self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.pipes[-1].positions[0].x, state[1], fill="red"))
+        self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.pipes[-1].positions[0].x, self.player.pos.y + state[1  ], fill="red"))
 
 
     def tick(self, action):
