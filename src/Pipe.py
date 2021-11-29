@@ -36,8 +36,8 @@ class Pipe:
         first_pipe_size = GameInfo.window_size.y - rdm_size
         second_pipe_size = first_pipe_size - go_through
 
-        first_pipe = Point(GameInfo.window_size.x + self.size.x / 2, first_pipe_size + self.size.y / 2)
-        second_pipe = Point(GameInfo.window_size.x + self.size.x / 2, second_pipe_size - self.size.y / 2)
+        first_pipe = Point(GameInfo.window_size.x + self.size.x, first_pipe_size + self.size.y / 2)
+        second_pipe = Point(GameInfo.window_size.x + self.size.x, second_pipe_size - self.size.y / 2)
 
         return [first_pipe, second_pipe]
 
