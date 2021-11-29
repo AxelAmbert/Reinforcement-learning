@@ -26,6 +26,8 @@ class Player:
         self.player_img = None
         self.show_img = None
         self.init_player_img()
+        self.velocity = 1
+        self.min_velocity = 8
 
     def update_player_img(self):
 
@@ -42,17 +44,11 @@ class Player:
 
     def tick(self, action):
         if action == JUMP:
+            self.velocity = -17
             self.jump()
-        if self.is_flying and self.tick_count < 5:
-            self.tick_count += 1
-            self.pos.y -= 15
-            self.fall_count = 0
-        elif self.started:
-            self.fall_count += 1
-            self.tick_count = 0
-            self.is_flying = False
-            if self.fall_count >= 5:
-                self.pos.y += 8
+        if self.velocity < self.min_velocity:
+            self.velocity += 2
+        self.pos.y += self.velocity
 
     def jump(self):
         self.is_flying = True

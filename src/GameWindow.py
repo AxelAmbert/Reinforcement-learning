@@ -37,6 +37,7 @@ class GameWindow(Canvas):
                 pipe.draw(self)
 
     def check_lose(self):
+        return
         results = self.find_overlapping(*self.player.get_hitbox())
         self.delete(self.hitbox_check)
         # self.hitbox_check = self.create_rectangle(*self.player.get_hitbox(), fill="red", tag="hitbox")
