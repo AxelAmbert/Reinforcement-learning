@@ -52,10 +52,17 @@ class Pipe:
         self.flipped = True if r == 0 else False
         self.pipe_img, self.flipped_pipe_img = self.init_images
         self.score_validated = False
+        self.flip = random.randint(-4, 2)
 
     def tick(self):
         for pos in self.positions:
             pos.x -= 5
+        if self.positions[1].y >= GameInfo.window_size.y:
+            self.flip = -self.flip
+        elif self.positions[0].y <= 0:
+            self.flip = abs(self.flip)
+        self.positions[0].y += self.flip
+        self.positions[1].y += self.flip
 
     def get_hitbox(self, index):
         start_x = self.positions[index].x - self.size.x / 2  # + self.adjust_hitbox()

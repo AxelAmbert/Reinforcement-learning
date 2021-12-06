@@ -24,7 +24,7 @@ class CrappyBirdEnv(Env):
 
     def _get_observation(self, action):
         h_dist, v_dist = self.game_window.tick(action)
-        h_dist /= self.game_window.screen_size[0]
+        h_dist /= (self.game_window.screen_size[0] - 250)
         v_dist /= self.game_window.screen_size[1]
         return np.array([h_dist, v_dist])
 

@@ -81,7 +81,7 @@ class GameWindow(Canvas):
 
     def get_distance_from_pipe(self):
         last_pipe = self.pipes[-1]
-        pos = (last_pipe.positions[0].x + (last_pipe.size.x / 2)) - self.player.pos.x
+        pos = (last_pipe.positions[0].x + (last_pipe.size.x / 2) + (self.player.size.x / 2)) - self.player.pos.x
 
         return pos if pos >= 0 else 0
 
@@ -92,7 +92,7 @@ class GameWindow(Canvas):
         wanted_pos = next_pipe_pos + (GameInfo.window_size.y / 6)
         v_dist = int(wanted_pos - player_pos)
 
-        # print(h_dist, v_dist)
+        # print(h_dist / (GameInfo.window_size.x / 2), v_dist / GameInfo.window_size.y)
 
         return np.array([h_dist, v_dist])
 
@@ -107,11 +107,20 @@ class GameWindow(Canvas):
         self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.player.pos.x + state[0], self.player.pos.y, fill="blue"))
         self.visualizer.append(self.create_line(self.player.pos.x, self.player.pos.y, self.pipes[-1].positions[0].x, self.player.pos.y + state[1], fill="red"))
 
+    def draw(self):
+        self.clouds_pos_x -= 3
+        if self.clouds_pos_x <= -(self.screen_size[0] / 2):
+            self.clouds_pos_x = self.screen_size[0] / 2
+        for cloud in self.clouds:
+            self.delete(cloud)
+        self.clouds[0] = self.create_image(self.clouds_pos_x, self.screen_size[1] / 2, image=self.clouds_img, tag='clouds1')
+        self.clouds[1] = self.create_image(self.clouds_pos_x + self.screen_size[0], self.screen_size[1] / 2, image=self.clouds_img, tag='clouds2')
 
     def tick(self, action):
         # if self.stop == False:
         #    self.after(TICK_DURATION, self.tick)
 
+        # self.draw()
         self.update_pos()
         self.player.tick(action)
         self.check_lose()
@@ -139,11 +148,15 @@ class GameWindow(Canvas):
 
     def __init__(self, root):
         width, height = root.winfo_screenwidth(), root.winfo_screenheight()
-
         super().__init__(width=480, height=640,
                          background="black", highlightthickness=0)
         self.screen_size = (480, 640)
         self.root = root
+        self.bg = ImageTk.PhotoImage(Image.open("./resources/crappy-assets/sky.png").convert("RGBA"))
+        #self.create_image(self.screen_size[0] / 2, self.screen_size[1] / 2, image=self.bg, tag='sky')
+        self.clouds_img = ImageTk.PhotoImage(Image.open("./resources/crappy-assets/clouds.png").convert("RGBA"))
+        self.clouds_pos_x = self.screen_size[0] / 2
+        self.clouds = [None, None]
         self.player = Player()
         self.pack()
         self.pipes = [Pipe()]

@@ -24,8 +24,7 @@ chosen_algorithm = PPO
 def update(root, window):
     window.tick(globals()['jump'])
     globals()['jump'] = False
-    if not window.stop:
-        root.after(int(1000 / 60), lambda: update(root, window))
+    root.after(int(1000 / 60), lambda: update(root, window))
 
 
 def enable_jump():
@@ -50,7 +49,7 @@ def render_test(model, env):
 
         while not done:
             env.render()
-            time.sleep(1 / 60)
+            time.sleep(1 / 120)
             action, _ = model.predict(obs, deterministic=True)
             obs, reward, done, info = env.step(action)
             score += reward
@@ -93,11 +92,11 @@ def learn():
 
     model, env = load_custom_model(root, game_window)
 
-    model.learn(total_timesteps=300000)
+    # model.learn(total_timesteps=300000)
 
-    PPO_Path = os.path.join('Training', 'Saved Models', 'PPO_flappy_6')
-    model.save(PPO_Path)
-    # model = chosen_algorithm.load(PPO_Path, env=env)
+    PPO_Path = os.path.join('Training', 'Saved Models', 'PPO_flappy_9')
+    # model.save(PPO_Path)
+    model = chosen_algorithm.load(PPO_Path, env=env)
 
     render_test(model, env)
     # root.mainloop()
