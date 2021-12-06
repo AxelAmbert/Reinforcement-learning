@@ -10,17 +10,18 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 
+from src.GameWindow import GameWindow
+
 
 class CrappyBirdEnv(Env):
 
-    def __init__(self, root, game_window):
+    def __init__(self):
         self.action_space = Discrete(2)
         # 0 = Y position of the bird | 1 = Distance from the bird to the next pipe | 2 = Y position of the hole
         self.observation_space = Box(-np.inf, np.inf, shape=(3,))
 
         # print(self.observation_space.sample())
-        self.root = root
-        self.game_window = game_window
+        self.game_window = GameWindow()
 
     def _get_observation(self, action):
         h_dist, v_dist_one, v_dist_two = self.game_window.tick(action)
@@ -37,8 +38,10 @@ class CrappyBirdEnv(Env):
         return obs, 1, self.game_window.stop, {}
 
     def render(self, **kwargs):
-        self.root.update_idletasks()
-        self.root.update()
+        self.game_window.draw()
+        #self.game_window.draw()
+        #self.root.update_idletasks()
+        #self.root.update()
 
     def reset(self):
         # 0 = Y position of the bird | 1 = Distance from the bird to the next pipe | 2 = Y position of the hole
@@ -47,5 +50,4 @@ class CrappyBirdEnv(Env):
         return self._get_observation(0)
 
     def close(self):
-        print('close ?')
         exit(0)
